@@ -66,7 +66,7 @@
 	</parameter>
 	<parameter name="REPORTDESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>
-		<defaultValueExpression><![CDATA["ATF Logbook for ABC Rifle Company By Jason"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["ATF Logbook for {your_company_name} By Jia Shi"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[select * from (SELECT distinct part.num AS partNum, inventorylog.partid AS partid ,tiinventorylogsn.serialnum as serial, manufacturer.info AS manufacturer, country.info AS country,
@@ -92,14 +92,14 @@
 
        (CASE WHEN cycleOutLog.partNum NOT LIKE '' THEN 'Inventory Cycled Out'     /* need test */
            WHEN scrapLog.partNum NOT LIKE '' THEN 'Inventory Scraped'         /* need test */
-           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null THEN 'ABC RIFLE COMPANY'  /*po*/
-           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is null THEN 'ABC RIFLE COMPANY'      /*rma*/
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null THEN '{your_company_name}'  /*po*/
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is null THEN '{your_company_name}'      /*rma*/
            WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.vendor is not NULL THEN shipinfo.vendor       /*return po*/
            WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.shipto is NULL THEN '#Sales Order Adjustment#'        /*so*/
            WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN shipinfo.shipto            /*so*/
            WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' AND part.defaultbomid is NULL THEN '#Work Order voided#'  
-           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'ABC RIFLE COMPANY'        /*wo*/
-           WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN '{your_company_name}'        /*wo*/
+           WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN '{your_company_name}'
           
           ELSE ''
        END) AS dispostionName,
@@ -129,10 +129,10 @@
        (CASE 
            WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null THEN poInfo.vendor
            WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is null THEN rmaInfo.shipto
-           WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN 'ABC RIFLE COMPANY'
-           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'ABC RIFLE COMPANY'
-           WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
-           WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+           WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN '{your_company_name}'
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN '{your_company_name}'
+           WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN '{your_company_name}'
+           WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN '{your_company_name}'
            WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'Inventory Cycled In'
            
           ELSE ''
@@ -156,10 +156,10 @@
        WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.customer is null then '#Sales Order Adjustment#' 
        WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN shipinfo.customer
        WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' AND part.defaultbomid is NULL THEN '#Work Order voided#' 
-       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'ABC RIFLE COMPANY'
-       WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
-       WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
-       WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN '{your_company_name}'
+       WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN '{your_company_name}'
+       WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN '{your_company_name}'
+       WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN '{your_company_name}'
           ELSE ''
           END) AS Customername,
           
