@@ -1,0 +1,1001 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.5.1.final using JasperReports Library version 6.5.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ATF Logbook" pageWidth="792" pageHeight="612" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="732" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="91683f6f-e4e4-4ed3-8e5f-8a418ac0da31">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="62"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="ireport.callouts" value="callouts.1.fg=0,0,0\ncallouts.1.text=Vshij 2/4/19 2\:07 PM\ncallouts.1.bounds=40,230,180,40\ncallouts.1.bg=255,255,0\n"/>
+	<parameter name="soNum" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="poNum" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="partNum" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Model" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="customerID" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="vendorID" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Serial #" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Manufacturer" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Caliber or Gauge" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cbStatus" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[%,ALL,po,PURCHASING ORDER,wo,WORK ORDER,so,SALES ORDER,rma,RMA,PO RETURN,PO RETURN,INVENTORY SCRAPED,INVENTORY SCRAPED,INVENTORY CYCLED IN,INVENTORY CYCLED IN,INVENTORY CYCLED OUT,INVENTORY CYCLED OUT]]></parameterDescription>
+		<defaultValueExpression><![CDATA["ALL"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cbType" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[%,ALL,Receiver,Receiver,Rifle,Rifle,Pistol,Pistol,Handgun,Handgun,Shotgun,Shotgun]]></parameterDescription>
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Vendor FFL #" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Customer FFL #" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ShowDetailInformation" class="java.lang.Boolean" isForPrompting="false">
+		<defaultValueExpression><![CDATA[true]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateRange1Acquisition Date" class="java.util.Date" isForPrompting="false">
+		<parameterDescription><![CDATA[All]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateRange2Acquisition Date" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateRange1Ship Date" class="java.util.Date" isForPrompting="false">
+		<parameterDescription><![CDATA[All]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateRange2Ship Date" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORTDESCRIPTION" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["ATF Logbook for ABC Rifle Company By Jason"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from (SELECT distinct part.num AS partNum, inventorylog.partid AS partid ,tiinventorylogsn.serialnum as serial, manufacturer.info AS manufacturer, country.info AS country,
+       importer.info AS importer, cal.info AS Caliber, cftype.info AS Type, model.info AS Model, company.name AS company,
+       tiinventorylogsn.serialnum AS receiptSN, shipInfo.serialnum AS ShipSN,  poinfo.poNum AS poNum,  
+       COALESCE(rmainfo.sonum,shipInfo.sonum, poInfo.soNum) AS soNum, inventorylog.tableid AS TABLEID, inventorylog.typeId, inventorylog.eventdate,
+              
+              
+       (CASE WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' then 'Inventory Scraped'
+             WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' then 'Inventory Cycled In'
+             WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' then 'Inventory Cycled Out'
+           
+           ELSE inventorylog.info 
+       END) AS detailinfo,
+        
+      /* Dispostion Info */
+       (CASE WHEN cycleOutLog.partNum NOT LIKE '' THEN cycleOutLog.eventDate
+           WHEN scrapLog.partNum NOT LIKE '' THEN scrapLog.eventDate
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null then poinfo.datereceived    /* only po post date is receive date*/
+           ELSE inventorylog.eventdate 
+       END) AS dispostionDate,
+
+
+       (CASE WHEN cycleOutLog.partNum NOT LIKE '' THEN 'Inventory Cycled Out'     /* need test */
+           WHEN scrapLog.partNum NOT LIKE '' THEN 'Inventory Scraped'         /* need test */
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null THEN 'ABC RIFLE COMPANY'  /*po*/
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is null THEN 'ABC RIFLE COMPANY'      /*rma*/
+           WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.vendor is not NULL THEN shipinfo.vendor       /*return po*/
+           WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.shipto is NULL THEN '#Sales Order Adjustment#'        /*so*/
+           WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN shipinfo.shipto            /*so*/
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' AND part.defaultbomid is NULL THEN '#Work Order voided#'  
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'ABC RIFLE COMPANY'        /*wo*/
+           WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+          
+          ELSE ''
+       END) AS dispostionName,
+       
+
+       (CASE 
+          WHEN cycleOutLog.partNum NOT LIKE '' THEN COALESCE(shipInfo.customerffl, shipInfo.vendorffl,'None')
+          WHEN scrapLog.partNum NOT LIKE '' THEN COALESCE(shipInfo.customerffl, shipInfo.vendorffl,'None')
+          WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null THEN '9-88-003-07-0L-04924'
+          WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is null THEN '9-88-003-07-0L-04924'
+          WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.vendor is not NULL THEN shipinfo.vendorffl   
+          WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.shipto is NULL THEN '#Sales Order Adjustment#'  
+          WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN shipinfo.customerffl
+          WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' AND part.defaultbomid is NULL THEN '#Work Order voided#' 
+          WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN '9-88-003-07-0L-04924'
+          WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN '9-88-003-07-0L-04924'
+          ELSE ''
+       END) AS dispostionFFL,
+
+
+       /* Acquistion Info */
+       (CASE WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null then poinfo.datereceived
+             ELSE inventorylog.eventdate
+       END) AS acquisitionDate,
+
+
+       (CASE 
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null THEN poInfo.vendor
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is null THEN rmaInfo.shipto
+           WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN 'ABC RIFLE COMPANY'
+           WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'ABC RIFLE COMPANY'
+           WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+           WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+           WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'Inventory Cycled In'
+           
+          ELSE ''
+          END) AS acquisitionName,
+     
+     (CASE 
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is not null THEN poInfo.vendorffl
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poinfo.poNum is null THEN rmaInfo.customerffl
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN '9-88-003-07-0L-04924'
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN '9-88-003-07-0L-04924'
+       WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN '9-88-003-07-0L-04924'
+       WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN '9-88-003-07-0L-04924' 
+       WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'None'
+          ELSE ''
+          END) AS acquisitionFFL, 
+          
+     (CASE 
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poInfo.poNum is not null THEN poInfo.vendor
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poInfo.poNum is null THEN rmaInfo.customer
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.vendor is not NULL THEN shipinfo.vendor   
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.customer is null then '#Sales Order Adjustment#' 
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN shipinfo.customer
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' AND part.defaultbomid is NULL THEN '#Work Order voided#' 
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'ABC RIFLE COMPANY'
+       WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+       WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+       WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN 'ABC RIFLE COMPANY'
+          ELSE ''
+          END) AS Customername,
+          
+           (CASE 
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poInfo.poNum is not null THEN 'PO'
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poInfo.poNum is null THEN 'RMA'
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.vendor is not NULL THEN '#PO RETURN' 
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.customer is null then 'SO ADJUSTMENT' 
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN 'SO'
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' AND part.defaultbomid is NULL THEN 'WO VOIDED' 
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'WO'
+       WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN 'INVENTORY SCRAPED'
+       WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'INVENTORY CYCLED IN'
+       WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN 'INVENTORY CYCLED OUT'
+          ELSE ''
+          END) AS dinfoo
+
+FROM inventorylog
+    INNER JOIN part on inventorylog.partid = part.id
+    INNER JOIN tiinventorylog on inventorylog.id = tiinventorylog.inventorylogid
+    INNER JOIN tiinventorylogsn on tiinventorylogsn.tiinventorylogid = tiinventorylog.id
+    INNER JOIN company ON company.id = 1
+    
+    
+    
+   /* Handle purchasing order */
+    LEFT JOIN (Select part.id AS partId, tiinventorylog.inventorylogid as id,tiinventorylogsn.serialnum, customerffl.info AS customerffl,fflname.info AS fflname, transnum.info AS transnum, vendorffl.info AS vendorffl,
+                customer.name AS customer, so.dateCompleted AS soDateCompleted, so.num AS soNum, customer.id AS customerid, receiptItem.orderTypeId,
+                po.num AS poNum, vendor.name AS vendor, po.dateCompleted AS poDateCompleted, vendor.id AS vendorId , receiptitem.datereceived
+
+                FROM inventorylog
+                        INNER JOIN part on inventorylog.partid = part.id
+                        INNER JOIN tiinventorylog on inventorylog.id = tiinventorylog.inventorylogid
+                        INNER JOIN tiinventorylogsn on tiinventorylogsn.tiinventorylogid = tiinventorylog.id
+                        INNER JOIN receiptItem on inventorylog.recordid = receiptItem.id and inventorylog.tableid = 1259138490
+
+                        LEFT JOIN soitem on receiptItem.soitemid = soitem.id
+                        LEFT JOIN so on soitem.soid = so.id
+                        LEFT JOIN customer ON so.customerid = customer.id
+
+                        LEFT JOIN poItem on receiptItem.poItemId = poItem.id
+                        LEFT JOIN po on poItem.poId = po.id
+                        LEFT JOIN vendor ON po.vendorId = vendor.id
+
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL #'
+                              AND customfield.tableid = 1012013120) AS customerffl ON so.id = customerffl.recordid
+
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL Name'
+                              AND customfield.tableid = 1012013120) AS fflname ON so.id = fflname.recordid
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'Transaction #'
+                              AND customfield.tableid = 1012013120) AS transNum ON so.id = transNum.recordid
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL #'
+                              AND customfield.tableid = 397076832) AS vendorffl ON po.id = vendorffl.recordid
+                WHERE inventoryLog.typeid = 10 AND po.num IS NOT NULL ) AS poInfo ON poInfo.partId = part.Id AND poInfo.serialnum = tiinventorylogsn.serialnum and inventorylog.id = poinfo.id
+                
+                
+
+                
+   /* Handle ship */
+    LEFT JOIN (Select part.id AS partId, tiinventorylog.inventorylogid AS id ,tiinventorylogsn.serialnum, customerffl.info AS customerffl,fflname.info AS fflname, transnum.info AS transnum, vendorffl.info AS vendorffl,
+                customer.name AS customer, so.dateCompleted AS soDateCompleted, so.num AS soNum, customer.id AS customerid, shipItem.orderTypeId,
+                po.num AS poNum, vendor.name AS vendor, po.dateCompleted AS poDateCompleted, vendor.id AS vendorId, so.shiptoname AS shipto, so.billtoname AS billto
+
+                FROM inventorylog
+                        INNER JOIN part on inventorylog.partid = part.id
+                        INNER JOIN tiinventorylog on inventorylog.id = tiinventorylog.inventorylogid
+                        INNER JOIN tiinventorylogsn on tiinventorylogsn.tiinventorylogid = tiinventorylog.id
+                        INNER JOIN shipitem on inventorylog.recordid = shipitem.id and inventorylog.tableid = 1555030112
+
+                        LEFT JOIN soitem on shipitem.soitemid = soitem.id
+                        LEFT JOIN so on soitem.soid = so.id
+                        LEFT JOIN customer ON so.customerid = customer.id
+
+                        LEFT JOIN poItem on shipItem.poItemId = poItem.id
+                        LEFT JOIN po on poItem.poId = po.id
+                        LEFT JOIN vendor ON po.vendorId = vendor.id
+
+                       LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL #'
+                              AND customfield.tableid = 1012013120) AS customerffl ON so.id = customerffl.recordid
+                       LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL Name'
+                              AND customfield.tableid = 1012013120) AS fflname ON so.id = fflname.recordid
+                       LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'Transaction #'
+                              AND customfield.tableid = 1012013120) AS transNum ON so.id = transNum.recordid
+                       LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL #'
+                              AND customfield.tableid = 397076832) AS vendorffl ON po.id = vendorffl.recordid
+                 WHERE inventorylog.typeid = 20) as shipInfo on part.id = shipInfo.partId and shipInfo.serialnum = tiinventorylogsn.serialnum  and inventorylog.id = shipinfo.id
+                 
+  /* Handle RMA */
+    LEFT JOIN (Select part.id AS partId, tiinventorylog.inventorylogid AS id ,tiinventorylogsn.serialnum, customerffl.info AS customerffl,fflname.info AS fflname, transnum.info AS transnum, vendorffl.info AS vendorffl,
+                customer.name AS customer, so.dateCompleted AS soDateCompleted, so.num AS soNum, customer.id AS customerid, receiptItem.orderTypeId,
+                po.num AS poNum, vendor.name AS vendor, po.dateCompleted AS poDateCompleted, vendor.id AS vendorId , receiptitem.datereceived , so.shiptoname AS shipto
+
+                FROM inventorylog
+                        INNER JOIN part on inventorylog.partid = part.id
+                        INNER JOIN tiinventorylog on inventorylog.id = tiinventorylog.inventorylogid
+                        INNER JOIN tiinventorylogsn on tiinventorylogsn.tiinventorylogid = tiinventorylog.id
+                        INNER JOIN receiptItem on inventorylog.recordid = receiptItem.id and inventorylog.tableid = 1259138490
+
+                        LEFT JOIN soitem on receiptItem.soitemid = soitem.id
+                        LEFT JOIN so on soitem.soid = so.id
+                        LEFT JOIN customer ON so.customerid = customer.id
+
+                        LEFT JOIN poItem on receiptItem.poItemId = poItem.id
+                        LEFT JOIN po on poItem.poId = po.id
+                        LEFT JOIN vendor ON po.vendorId = vendor.id
+
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL #'
+                              AND customfield.tableid = 1012013120) AS customerffl ON so.id = customerffl.recordid
+
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL Name'
+                              AND customfield.tableid = 1012013120) AS fflname ON so.id = fflname.recordid
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'Transaction #'
+                              AND customfield.tableid = 1012013120) AS transNum ON so.id = transNum.recordid
+                        LEFT JOIN (SELECT customvarchar.info, customvarchar.recordid
+                                FROM customfield
+                                JOIN customvarchar ON customfield.id = customvarchar.customfieldid
+                                WHERE customfield.name = 'FFL #'
+                              AND customfield.tableid = 397076832) AS vendorffl ON po.id = vendorffl.recordid
+                WHERE inventoryLog.typeid = 10 AND po.num IS NULL ) AS rmaInfo ON rmaInfo.partId = part.Id AND rmaInfo.serialnum = tiinventorylogsn.serialnum and inventorylog.id = rmainfo.id
+                
+
+ 
+     /* Handle scraped items */
+    LEFT JOIN (Select distinct part.id, tiinventorylog.inventorylogid as idd ,tiinventorylogsn.serialnum, inventorylog.eventdate, COALESCE(part.num, '') AS partNum
+             from inventorylog
+             inner join part on inventorylog.partid = part.id
+             inner JOIN tiinventorylog on inventorylog.id = tiinventorylog.inventorylogid
+             inner JOIN tiinventorylogsn on tiinventorylogsn.tiinventorylogid = tiinventorylog.id
+             where inventorylog.typeid = 67 and inventorylog.tableid = -1407594912) as scrapLog on part.id = scrapLog.id and scrapLog.serialnum = tiinventorylogsn.serialnum and inventorylog.id = scrapLog.idd
+
+    /* Handle cycled out items */
+    LEFT JOIN (Select part.id, tiinventorylog.inventorylogid as idd ,tiinventorylogsn.serialnum, inventorylog.eventdate, COALESCE(part.num, '') AS partNum
+             from inventorylog
+             JOIN part on inventorylog.partid = part.id
+             LEFT JOIN tiinventorylog on inventorylog.id = tiinventorylog.inventorylogid
+             LEFT JOIN tiinventorylogsn on tiinventorylogsn.tiinventorylogid = tiinventorylog.id
+             where inventorylog.typeid = 65) as cycleOutLog on part.id = cycleOutLog.id and cycleOutLog.serialnum = tiinventorylogsn.serialnum and inventorylog.id = cycleOutLog.idd
+
+    LEFT JOIN (SELECT customset.info, customset.recordid
+           FROM customfield
+           JOIN customset ON customfield.id = customset.customfieldid
+           WHERE customfield.name = 'Manufacturer'
+           AND customfield.tableid = -2003201472) AS manufacturer ON part.id = manufacturer.recordid
+    LEFT JOIN (SELECT customset.info, customset.recordid
+           FROM customfield
+           JOIN customset ON customfield.id = customset.customfieldid
+           WHERE customfield.name = 'Country of Manufacture'
+           AND customfield.tableid = -2003201472) AS country ON part.id = country.recordid
+    LEFT JOIN (SELECT customset.info, customset.recordid
+           FROM customfield
+           JOIN customset ON customfield.id = customset.customfieldid
+           WHERE customfield.name = 'Importer'
+           AND customfield.tableid = -2003201472) AS importer ON part.id = importer.recordid
+    LEFT JOIN (SELECT customset.info, customset.recordid
+           FROM customfield
+           JOIN customset ON customfield.id = customset.customfieldid
+           WHERE customfield.name = 'Caliber or Gauge'
+           AND customfield.tableid = -2003201472) AS cal ON part.id = cal.recordid
+    LEFT JOIN (SELECT customset.info, customset.recordid
+           FROM customfield
+           JOIN customset ON customfield.id = customset.customfieldid
+           WHERE customfield.name = 'Type'
+           AND customfield.tableid = -2003201472) AS cftype ON part.id = cftype.recordid
+    LEFT JOIN (SELECT customset.info, customset.recordid
+           FROM customfield
+           JOIN customset ON customfield.id = customset.customfieldid
+           WHERE customfield.name = 'Model'
+           AND customfield.tableid = -2003201472) AS model ON part.id = model.recordid
+    
+
+WHERE inventorylog.typeid in (10, 64, 20,  67, 65) 
+
+
+
+AND (inventorylog.eventdate BETWEEN $P{dateRange1Acquisition Date} AND $P{dateRange2Acquisition Date}
+    OR COALESCE(shipInfo.sodatecompleted,'1000-01-01') BETWEEN $P{dateRange1Ship Date} AND $P{dateRange2Ship Date}
+    OR COALESCE(poinfo.sodatecompleted,'1000-01-01') BETWEEN $P{dateRange1Ship Date} AND $P{dateRange2Ship Date})
+  AND part.num LIKE $P{partNum}
+  AND UPPER(COALESCE(manufacturer.info, 0)) LIKE UPPER('%'||$P{Manufacturer}||'%')
+  AND UPPER(COALESCE(model.info, 0)) LIKE UPPER('%'||$P{Model}||'%')
+
+
+  AND UPPER(COALESCE(cal.info, 0)) LIKE UPPER('%'||$P{Caliber or Gauge}||'%')
+  AND UPPER(COALESCE(poinfo.poNum, 0)) LIKE UPPER($P{poNum})
+  AND UPPER(COALESCE(rmainfo.sonum,shipInfo.sonum, poInfo.soNum,0)) LIKE UPPER($P{soNum})
+  AND UPPER(COALESCE(tiinventorylogsn.serialnum, 0)) LIKE UPPER('%'||$P{Serial #}||'%')
+  AND UPPER(COALESCE(cftype.info, 0)) LIKE UPPER('%'||$P{cbType}||'%')
+  AND ((COALESCE(poinfo.vendorId, 0) LIKE $P{vendorID}) OR (COALESCE(shipInfo.vendorId, 0) LIKE $P{vendorID}))
+  AND ((UPPER(COALESCE(poinfo.vendorFFL, 0)) LIKE UPPER('%'||$P{Vendor FFL #}||'%')) OR
+       (UPPER(COALESCE(shipInfo.vendorFFL, 0)) LIKE UPPER('%'||$P{Vendor FFL #}||'%')))
+  AND ((COALESCE(shipInfo.customerId, 0) LIKE $P{customerID}) OR (COALESCE(poinfo.customerId, 0) LIKE $P{customerID}))
+  AND ((UPPER(COALESCE(shipInfo.customerFFL, 0)) LIKE UPPER('%'||$P{Customer FFL #}||'%')) OR
+       (UPPER(COALESCE(poinfo.customerFFL, 0)) LIKE UPPER('%'||$P{Customer FFL #}||'%')))
+  AND  (CASE 
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poInfo.poNum is not null THEN 'PO'
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '1259138490' AND poInfo.poNum is null THEN 'RMA'
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.vendor is not NULL THEN 'PO RETURN' 
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' AND shipinfo.customer is null then 'SO ADJUSTMENT' 
+       WHEN inventoryLog.typeId = 20 AND inventorylog.tableid LIKE '1555030112' THEN 'SO'
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' AND part.defaultbomid is NULL THEN 'WO VOIDED' 
+       WHEN inventoryLog.typeId = 10 AND inventorylog.tableid LIKE '-355941248' THEN 'WO'
+       WHEN inventoryLog.typeId = 67 AND inventorylog.tableid LIKE '-1407594912' THEN 'INVENTORY SCRAPED'
+       WHEN inventoryLog.typeId = 64 AND inventorylog.tableid LIKE '-1407594912' THEN 'INVENTORY CYCLED IN'
+       WHEN inventoryLog.typeId = 65 AND inventorylog.tableid LIKE '-1407594912' THEN 'INVENTORY CYCLED OUT'
+          ELSE ''
+          END) LIKE UPPER('%'||$P{cbStatus}||'%')
+          
+Order by inventorylog.eventdate
+          
+ )
+ 
+where dinfoo NOT LIKE '%ADJUSTMENT%' and dinfoo NOT LIKE '%VOIDED%']]>
+	</queryString>
+	<field name="PARTNUM" class="java.lang.String"/>
+	<field name="SERIAL" class="java.lang.String"/>
+	<field name="MANUFACTURER" class="java.lang.String"/>
+	<field name="COUNTRY" class="java.lang.String"/>
+	<field name="detailinfo" class="java.lang.String"/>
+	<field name="customername" class="java.lang.String"/>
+	<field name="CALIBER" class="java.lang.String"/>
+	<field name="TYPE" class="java.lang.String"/>
+	<field name="COMPANY" class="java.lang.String"/>
+	<field name="Model" class="java.lang.String"/>
+	<field name="RECEIPTSN" class="java.lang.String"/>
+	<field name="SHIPSN" class="java.lang.String"/>
+	<field name="PONUM" class="java.lang.String"/>
+	<field name="SONUM" class="java.lang.String"/>
+	<field name="DISPOSTIONDATE" class="java.sql.Timestamp"/>
+	<field name="DISPOSTIONNAME" class="java.lang.String"/>
+	<field name="DISPOSTIONFFL" class="java.lang.String"/>
+	<field name="ACQUISITIONDATE" class="java.sql.Timestamp"/>
+	<field name="ACQUISITIONNAME" class="java.lang.String"/>
+	<field name="ACQUISITIONFFL" class="java.lang.String"/>
+	<field name="TYPEID" class="java.lang.Integer"/>
+	<variable name="DateFormat" class="java.lang.String" resetType="None">
+		<variableExpression><![CDATA[(System.getProperty("REPORT_DATE_FORMAT"))]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="60" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement key="textField-13" mode="Transparent" x="0" y="40" width="732" height="14" forecolor="#000000" backcolor="#FFFFFF" uuid="d0293d84-ef9c-467a-ba6d-0975d59b4f68">
+					<printWhenExpression><![CDATA[true]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" rotation="None">
+					<font fontName="Open Sans" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateRange1Acquisition Date}.getYear() <= -900 && $P{dateRange2Acquisition Date}.getYear() >= 1100
+  ? "Date Range: All"
+  : "Date Range: " + new SimpleDateFormat($V{DateFormat}).format($P{dateRange1Acquisition Date}.getTime() + 1000) + " - " +
+new SimpleDateFormat($V{DateFormat}).format($P{dateRange2Acquisition Date})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="732" height="18" uuid="95b28492-4f99-4d19-811d-8d6c2c93e801"/>
+				<textElement textAlignment="Center">
+					<font fontName="Open Sans" size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPANY}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="18" width="732" height="22" uuid="e297aa69-3107-48f0-90a6-3fcfdb6f51a0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Open Sans" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ATF Logbook]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="20" width="60" height="20" uuid="abc1ba32-2e87-4c0b-8543-637516b4e9be"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Manufacturer/Importer]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="60" y="20" width="40" height="20" uuid="a1a7a684-9ca2-45ad-b317-3b64ceff0102"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Country]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="610" y="20" width="60" height="20" uuid="b836d369-840c-4d83-bd8f-4a9b2166daf3">
+					<printWhenExpression><![CDATA[$P{ShowDetailInformation}]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Detail Info]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="20" width="50" height="20" uuid="238bd3ad-de1f-43c2-b69b-940b73fc04c0"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Caliber or Gauge]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="20" width="40" height="20" uuid="7da23d39-e214-4fb0-90f0-96598631600d"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Model]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="20" width="40" height="20" uuid="7c30d0f1-1c27-4b65-bc3b-c808483039c8"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Serial #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="20" width="40" height="20" uuid="3f52ce77-4ab1-458f-879e-21b8f55b8368"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="270" y="20" width="50" height="20" uuid="1633ef2d-674b-4cb1-905e-38b931754ff9"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="320" y="20" width="50" height="20" uuid="cf6b7493-6885-4236-aaee-1c0541cadf16"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="370" y="20" width="50" height="20" uuid="d9a18b0a-a424-44a1-8926-e61a61672938"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FFL #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="20" width="50" height="20" uuid="257d4ebc-030d-406c-9e24-b66e100efcc1"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="470" y="20" width="50" height="20" uuid="c588db1c-9a5a-4f1c-8bf1-e89d24426216"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="520" y="20" width="50" height="20" uuid="ced11b96-12c0-4c8c-bf69-a776aa02b5aa"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FFL #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="270" height="20" uuid="bb951c7c-98a3-4a4f-af20-d1d56fbba85e"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Open Sans" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Firearm Information]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="270" y="0" width="150" height="20" uuid="8e0ccac4-96da-4529-a6e0-d8d65cde2b84"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Open Sans" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Acquisition]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="670" y="20" width="62" height="20" uuid="d0ca3e09-1924-48da-a6d4-164e34121818">
+					<printWhenExpression><![CDATA[$P{ShowDetailInformation}]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Customer Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="0" width="150" height="20" uuid="1d29bcb2-bb0b-43cd-9224-e5a390e5a4eb"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Open Sans" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Disposition]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="570" y="0" width="162" height="20" uuid="7957c2a1-1dcb-4607-a1e0-9e29b4700822">
+					<printWhenExpression><![CDATA[$P{ShowDetailInformation}]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Open Sans" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Other Information]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="570" y="20" width="40" height="20" uuid="4b9b6a15-5204-47b5-88ec-54aab3082178">
+					<printWhenExpression><![CDATA[$P{ShowDetailInformation}]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Open Sans" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Part Number]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="49" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="60" height="16" uuid="09cec116-ad5f-4aac-bdfc-849469e04b37"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MANUFACTURER}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="60" y="0" width="40" height="16" uuid="da5cdbbf-1f1c-44c4-bfd1-e0af1a97b063"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COUNTRY}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="610" y="0" width="60" height="16" uuid="87af3e77-883b-4a29-af1a-8ec503536503">
+					<printWhenExpression><![CDATA[$P{ShowDetailInformation}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{detailinfo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="220" y="0" width="50" height="16" uuid="ef3cca20-bd12-42ee-837e-1d2bb44e55f3"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CALIBER}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="100" y="0" width="40" height="16" uuid="2ce69875-339a-4274-9504-19c29f6d8c58"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Model}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="140" y="0" width="40" height="16" uuid="b2d306a6-1677-4acf-9442-da721ba715bb"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SERIAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="180" y="0" width="40" height="16" uuid="c95c9501-a6a4-4b22-a2bd-64f98be4cd90"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TYPE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="270" y="0" width="50" height="16" uuid="808b7cc1-deba-4c81-8291-8488cd37dc9a"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ACQUISITIONDATE}]]></textFieldExpression>
+				<patternExpression><![CDATA[$V{DateFormat}]]></patternExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="320" y="0" width="50" height="16" uuid="2d2649a3-4708-4d92-b97f-6df26b016c3e"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ACQUISITIONNAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="370" y="0" width="50" height="16" uuid="33fca8d1-fea1-468b-9321-5898aa785723"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ACQUISITIONFFL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="470" y="0" width="50" height="16" uuid="4d0a5791-6e84-4cbb-93da-93e614302421"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DISPOSTIONNAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="520" y="0" width="50" height="16" uuid="eea45a62-9ebd-4e9d-9371-99baabd01d99"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DISPOSTIONFFL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="44" width="732" height="5" uuid="76512b92-683d-4c56-bb5d-ab67811bb70f"/>
+				<textElement>
+					<font fontName="Open Sans" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="420" y="0" width="50" height="16" uuid="b62cea45-9e2d-4960-8e87-99d9439ad672"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DISPOSTIONDATE}]]></textFieldExpression>
+				<patternExpression><![CDATA[$V{DateFormat}]]></patternExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="670" y="0" width="62" height="16" uuid="8e8fbb53-8e2a-45a9-8bbf-d2c70d739474">
+					<printWhenExpression><![CDATA[$P{ShowDetailInformation}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{customername}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="570" y="0" width="40" height="16" uuid="d9fdd582-0ef2-4140-bfbb-4af37a6e82af">
+					<printWhenExpression><![CDATA[$P{ShowDetailInformation}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="Open Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PARTNUM}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="textField" mode="Transparent" x="0" y="10" width="501" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="f6c01641-7f40-4f8e-bd8f-88eea850e8b8"/>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+					<font fontName="Open Sans" size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG)).format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="true">
+				<reportElement key="textField" mode="Transparent" x="684" y="10" width="48" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="1e0d6d3a-9018-41d3-bbcd-36460e9896ef"/>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+					<font fontName="Open Sans" size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="textField" mode="Transparent" x="501" y="10" width="183" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="988ba21b-13f9-4fbc-a5c4-6e16c7e19f52"/>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None">
+					<font fontName="Open Sans" size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER} + " of "]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
